@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Jackpot Royale</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+
+</head>
+
+<body>
+    <div id="content">
+        <div class="header">
+            <img src="assets/logo.png" alt="" class="logo">
+        </div>
+        <div class="section">
+            <div class="text-normal text-center">current</div>
+            <div class="text-normal text-center headline">Jackpot</div>
+            <div class="card mt-4 pos-rel">
+                <div class="text-normal card-headline text-center" id="current-amount"
+                    data-current-jackpot="<%= game.currentJackpot %>">
+                    <%= game.currentJackpot %>,00 €
+                </div>
+                <span class="indicator green"></span>
+            </div>
+        </div>
+        <div class="section">
+            <div class="text-normal text-center">place your bet</div>
+            <div class="bet-buttons">
+                <a href="#" class="btn-block text-center" data-amount="50"><span class="text-normal">
+                        50,00 €</span></a>
+                <a href="#" class="btn-block text-center" data-amount="100"><span class="text-normal">
+                        100,00 €</span></a>
+                <a href="#" class="btn-block text-center" data-amount="150"><span class="text-normal">
+                        150,00 €</span></a>
+                <a href="#" class="btn-block text-center" data-amount="300"><span class="text-normal">
+                        300,00 €</span></a>
+            </div>
+        </div>
+    </div>
+    <script>
+        gameId = "<%= game.id %>"
+        userId = "<%= userId %>"
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
