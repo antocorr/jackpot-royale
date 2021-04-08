@@ -28,7 +28,14 @@ setInterval(function () {
 }, 10000)
 app.get('/', (req, res) => {
     if (Object.values(games).length) {
-        res.redirect("/" + Object.keys(games)[0])
+        var gId = Object.keys(games)[Object.keys(games).length - 1]
+        console.log(games[gId].users.length, games[gId].maxUsers)
+        if (games[gId].users.length >= games[gId].maxUsers) {
+            const game = createGame();
+            res.redirect("/" + game.id)
+            return;
+        }
+        res.redirect("/" + gId)
     } else {
         const game = createGame();;
         res.redirect("/" + game.id)
@@ -60,6 +67,9 @@ io.on('connection', socket => {
         socket.join(gameId)
         gId = gameId
         user = { id: userId }
+        if (games[gId].users.indexOf(userId) == -1) {
+            games[gId].users.push(userId);
+        }
         socket.broadcast.to(gameId).emit('user-connected', userId)
 
         socket.on('disconnect', () => {
@@ -106,7 +116,7 @@ function placeBet(bet) {
 
 //Game
 function createGame() {
-    const game = { currentJackpot: 200, bets: [], possibleAmounts: [50, 100, 150, 300] };
+    const game = { currentJackpot: 200, bets: [], possibleAmounts: [50, 100, 150, 300], users: [], maxUsers: 4 };
     game.id = uuidV4();
     games[game.id] = game;
     return game;
