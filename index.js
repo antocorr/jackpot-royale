@@ -1,13 +1,31 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 const { v4: uuidV4 } = require('uuid')
-const games = {};
+let games = {};
 app.set('view engine', 'ejs')
 app.use(express.static('public'));
+let disablePing = false
+if (fs.existsSync('persistence/games.json')) {
+    let rawdata = fs.readFileSync('persistence/games.json');
+    games = JSON.parse(rawdata);
+}
+setInterval(function () {
+    if (!Object.values(games).length) {
+        return;
+    }
+    console.log("disabling ping...")
+    disablePing = true;
+    let data = JSON.stringify(games);
+    fs.writeFile('persistence/games.json', data, function () {
+        disablePing = false;
+        console.log("enabling ping...")
+    });
 
+}, 10000)
 app.get('/', (req, res) => {
     if (Object.values(games).length) {
         res.redirect("/" + Object.keys(games)[0])
@@ -65,6 +83,9 @@ io.on('connection', socket => {
 
 })
 setInterval(function () {
+    if (disablePing) {
+        return;
+    }
     for (const k in games) {
         io.in(k).emit('ping-clients')
     }
@@ -80,17 +101,6 @@ function placeBet(bet) {
     }
     //
 }
-// io.on('connection', (socket) => {
-//     console.log('a user connected');
-//     socket.on('chat message', (msg) => {
-//         console.log('message: ' + msg);
-//     });
-//     socket.on('disconnect', () => {
-//         console.log('user disconnected');
-//     });
-// });
-
-
 
 
 
